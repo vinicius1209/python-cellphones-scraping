@@ -2,11 +2,13 @@ from bs4 import BeautifulSoup
 from requests import get
 import pandas as pd
 import json
-import time
+import time as time
+import random as random
 
 def create_df():
 
     num_pages = input('Quantas páginas desejas buscar históricos de celulares?')
+    num_cell = 0
     headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
 
     ids = []
@@ -29,14 +31,18 @@ def create_df():
 
         for phones in phones_cards:
             id = phones.find_all('div')[0].get('id').replace('card-', '')
+            num_cell += 1
             print('Gerando para o ID: ' + str(id))
 
+            #Busca os valores pela requisição da API do ofertaesperta
             response_json = get_all_info_by_api(id)
+
             if 'cupon' in response_json:
                 cupom_obj = response_json["cupon"]
             else:
                 cupom_obj = {'code': '-', "title": '-'}
 
+            #Obj para pegar as informacoes da loja
             store_obj = response_json["store"]
 
             #Appends
@@ -50,33 +56,23 @@ def create_df():
             cupons_titles.append(cupom_obj["title"])
             stores.append(store_obj["name"])
 
+        time.sleep(random.randint(1, 2))
+
     phones_df = pd.DataFrame({
-        "id": ids,
-        "image": images,
-        "phone_title": titles,
-        "last_price": last_prices,
-        "current_price": current_prices,
-        "payment_format": payment_formats,
-        "cupom_code": cupons_codes,
-        "cupom_title": cupons_titles,
-        "store": stores,
+        'id': ids,
+        'image': images,
+        'phone_title': titles,
+        'last_price': last_prices,
+        'current_price': current_prices,
+        'payment_format': payment_formats,
+        'cupom_code': cupons_codes,
+        'cupom_title': cupons_titles,
+        'store': stores
     })
 
-    print('Salvando em arquivo CSV...')
+    print('Salvando em arquivo CSV para um total de {} celulares...'.format(num_cell))
 
     phones_df.to_csv("phones.csv", sep='\t', encoding='utf-8')
-
-    """ OLD WAY TO GET INFORMATIONS BY HTML
-    #Id da promoção
-    id = phones_cards[0].find_all('div')[0].get('id').replace('card-', '')
-    print(id)
-    #Preço anterior
-    print(phones_cards[0].find(class_="offer-previous-price").find_all('p')[0].text.replace(' ', ''))
-    #Preço atual
-    print(phones_cards[0].find(class_="offer-card-price").text)
-    #Método de pagamento
-    print(phones_cards[0].find(class_="offer-payment-format").text)
-    """
 
 def get_all_info_by_api(id):
 
