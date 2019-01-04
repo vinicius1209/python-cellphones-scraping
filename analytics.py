@@ -20,6 +20,9 @@ def create_df():
     cupons_codes = []
     cupons_titles = []
     stores = []
+    actives = []
+    ratings = []
+    likes = []
 
     for page in range(1, int(num_pages)+1):
         url = 'https://www.ofertaesperta.com/categoria/celulares-e-smartphones?page=' + str(page)
@@ -55,6 +58,9 @@ def create_df():
             cupons_codes.append(cupom_obj["code"])
             cupons_titles.append(cupom_obj["title"])
             stores.append(store_obj["name"])
+            actives.append(response_json["active"])
+            ratings.append(response_json["rating"])
+            likes.append(response_json["likes_count"])
 
         time.sleep(random.randint(1, 2))
 
@@ -67,21 +73,29 @@ def create_df():
         'payment_format': payment_formats,
         'cupom_code': cupons_codes,
         'cupom_title': cupons_titles,
-        'store': stores
+        'store': stores,
+        'active': actives,
+        'rating': ratings,
+        'likes_count': likes
     })
 
-    print('Salvando em arquivo CSV para um total de {} celulares...'.format(num_cell))
+    print('Data Frame criado para um total de {} celulares...'.format(num_cell))
 
-    phones_df.to_csv("phones.csv", sep='\t', encoding='utf-8')
+    return phones_df
 
 def get_all_info_by_api(id):
-
     headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
     url = 'https://www.ofertaesperta.com/api/offers/' + str(id)
-    #time.sleep(3)
     response = get(url, headers=headers)
     response_json = json.loads(response.text)
 
     return response_json
 
-create_df()
+def df_to_csv(data_frame):
+    data_frame.to_csv("phones.csv", sep='\t', encoding='utf-8')
+    print('Data Frame salvo com sucesso para phones.csv')
+
+def csv_to_df(file_name):
+    phones_df = pd.read_csv(file_name, sep='\t', encoding='utf-8')
+    print('Data Frame gerado com sucesso a partir do csv {}'.format(file_name))
+    return phones_df
