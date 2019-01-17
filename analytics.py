@@ -4,6 +4,7 @@ import pandas as pd
 import json
 import time as time
 import random as random
+import re as re
 
 def create_df():
 
@@ -91,11 +92,26 @@ def get_all_info_by_api(id):
 
     return response_json
 
-def df_to_csv(data_frame):
-    data_frame.to_csv("phones.csv", sep='\t', encoding='utf-8')
+def df_to_csv(data_frame, fileName):
+    data_frame.to_csv(fileName, sep='\t', encoding='utf-8')
     print('Data Frame salvo com sucesso para phones.csv')
 
 def csv_to_df(file_name):
     phones_df = pd.read_csv(file_name, sep='\t', encoding='utf-8')
     print('Data Frame gerado com sucesso a partir do csv {}'.format(file_name))
+    return phones_df
+
+def append_memories(phones_df):
+    memories = []
+    for h in phones_df.phone_title:
+        # Expressao regular para pegar somente numeros antes de GB, de até 3 digitos
+        n = [s for s in re.findall(r"(\d{2,3}GB)", h)]
+        memories.append(n)
+
+    memoriesT = pd.DataFrame(memories)[0]
+    phones_df['Ram'] = memoriesT
+
+    #Limpo as linhas onde não foi possível buscar o total de memória Ram
+    phones_df.dropna(subset=['Ram'], inplace=True)
+    phones_df.reset_index(inplace=True, drop=True)
     return phones_df
