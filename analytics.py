@@ -5,6 +5,10 @@ import json
 import time as time
 import random as random
 import re as re
+import itertools
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
 
 def create_df():
 
@@ -111,7 +115,28 @@ def append_memories(phones_df):
     memoriesT = pd.DataFrame(memories)[0]
     phones_df['Ram'] = memoriesT
 
-    #Limpo as linhas onde não foi possível buscar o total de memória Ram
-    phones_df.dropna(subset=['Ram'], inplace=True)
-    phones_df.reset_index(inplace=True, drop=True)
     return phones_df
+
+def clear_data(phones_df):
+
+    #Limpo as linhas onde não foi possível buscar o total de memória Ram ou o preço vazio
+    phones_df.dropna(subset=['Ram', 'last_price'], inplace=True)
+    phones_df.reset_index(inplace=True, drop=True)
+
+    #Current_price
+    y = []
+    for x in phones_df.current_price:
+        y.append(float(x.replace('.', '').replace(',', '.')))
+    phones_df['current_price'] = y
+
+    #Last_price
+    y = []
+    for x in phones_df.last_price:
+        y.append(float(x.replace('.', '').replace(',', '.')))
+    phones_df['last_price'] = y
+
+    return phones_df
+
+def chart(phones_df):
+    sns.jointplot(x='likes_count', y='current_price', data=phones_df, height=(6))
+    plt.show()
