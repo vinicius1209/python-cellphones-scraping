@@ -8,7 +8,8 @@ Web Scraping made in Python to get cellphones informations (price, description, 
 ### Technologies, Extensions and Libraries
 
 - [x] Python 3.7
-- [x] requests
-- [x] json
+- [x] requests & Json
+- [x] Seaborn
+- [x] Matplotlib
 - [x] Beautifulsoup4
 - [x] Pandas
