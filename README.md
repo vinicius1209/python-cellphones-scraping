@@ -13,3 +13,4 @@ Web Scraping made in Python to get cellphones informations (price, description, 
 - [x] Matplotlib
 - [x] Beautifulsoup4
 - [x] Pandas
+- [x] Flask
