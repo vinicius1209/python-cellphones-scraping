@@ -1,0 +1,38 @@
+.nav{
+     cursor: pointer;
+}
+
+.navbar{
+     margin-bottom: 20px;
+}
+
+.navbar-nav{
+    flex-direction: row;
+}
+
+.nav-link {
+   padding-right: .5rem !important;
+   padding-left: .5rem !important;
+}
+
+.nav-item::after{
+	content:'';
+	display:block;
+	width:0px;
+	height:2px;
+	background:#ffffff;
+	transition: 0.2s;
+}
+
+.nav-item:hover::after{
+	width:100%;
+}
+
+.ml-auto{
+  left: auto !important;
+  right: 0px;
+}
+
+.card{
+     margin-bottom: 1.25rem;
+}

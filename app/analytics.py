@@ -3,16 +3,12 @@ from requests import get
 import pandas as pd
 import json
 import time as time
-import random as random
+import random
 import re as re
-import itertools
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
 
-def create_df():
+def getDataFrame(num_pages):
 
-    num_pages = input('Quantas páginas desejas buscar históricos de celulares?')
+    #num_pages = input('Quantas páginas desejas buscar históricos de celulares?')
     num_cell = 0
     headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
 
@@ -30,49 +26,55 @@ def create_df():
     likes = []
 
     for page in range(1, int(num_pages)+1):
-        print('Acessando página: ' + str(page))
-        url = 'https://www.ofertaesperta.com/categoria/celulares-e-smartphones?page=' + str(page)
-        response = get(url, headers=headers)
-        html_soup = BeautifulSoup(response.text, 'html.parser')
+        try:
+            print('Acessando página: ' + str(page))
+            url = 'https://www.ofertaesperta.com/categoria/celulares-e-smartphones?page=' + str(page)
+            response = get(url, headers=headers)
+            html_soup = BeautifulSoup(response.text, 'html.parser')
 
-        phones_containers = html_soup.find_all('div', class_="cards")
-        phones_cards = phones_containers[0].find_all('div', class_="card-col")
+            phones_containers = html_soup.find_all('div', class_="cards")
+            phones_cards = phones_containers[0].find_all('div', class_="card-col")
 
-        for phones in phones_cards:
-            id = phones.find_all('div')[0].get('id').replace('card-', '')
-            num_cell += 1
-            print('Gerando para o ID: ' + str(id))
+            for phones in phones_cards:
+                try:
+                    id = phones.find_all('div')[0].get('id').replace('card-', '')
+                    num_cell += 1
+                    print('Gerando para o ID: ' + str(id))
 
-            #Busca os valores pela requisição da API do ofertaesperta
-            response_json = get_all_info_by_api(id)
+                    #Busca os valores pela requisição da API do ofertaesperta
+                    response_json = get_all_info_by_api(id)
 
-            if 'cupon' in response_json:
-                cupom_obj = response_json["cupon"]
-            else:
-                cupom_obj = {'code': '-', "title": '-'}
+                    if 'cupon' in response_json:
+                        cupom_obj = response_json["cupon"]
+                    else:
+                        cupom_obj = {'code': '-', "title": '-'}
 
-            #Obj para pegar as informacoes da loja
-            store_obj = response_json["store"]
+                    #Obj para pegar as informacoes da loja
+                    store_obj = response_json["store"]
 
-            #Appends
-            ids.append(id)
-            images.append(response_json["image_link"])
-            titles.append(response_json["title"])
-            last_prices.append(response_json["previous_price"])
-            current_prices.append(response_json["price"])
-            payment_formats.append(response_json["payment_format_primary"])
-            cupons_codes.append(cupom_obj["code"])
-            cupons_titles.append(cupom_obj["title"])
-            stores.append(store_obj["name"])
-            actives.append(response_json["active"])
-            ratings.append(response_json["rating"])
-            likes.append(response_json["likes_count"])
-
-        time.sleep(random.randint(1, 2))
+                    #Appends
+                    ids.append(id)
+                    images.append(response_json["image_link"])
+                    titles.append(response_json["title"])
+                    last_prices.append(response_json["previous_price"])
+                    current_prices.append(response_json["price"])
+                    payment_formats.append(response_json["payment_format_primary"])
+                    cupons_codes.append(cupom_obj["code"])
+                    cupons_titles.append(cupom_obj["title"])
+                    stores.append(store_obj["name"])
+                    actives.append(response_json["active"])
+                    ratings.append(response_json["rating"])
+                    likes.append(response_json["likes_count"])
+                except Exception:
+                    print('Houve um erro na busca do celular, seguindo para o próximo...')
+                    continue
+            time.sleep(random.randint(1, 2))
+        except Exception:
+            print('Houve um erro na requisição, seguindo para a próxima página...')
+            continue
 
     phones_df = pd.DataFrame({
         'id': ids,
-        'image': images,
         'phone_title': titles,
         'last_price': last_prices,
         'current_price': current_prices,
@@ -98,8 +100,14 @@ def get_all_info_by_api(id):
     return response_json
 
 def df_to_csv(data_frame, fileName):
-    data_frame.to_csv(fileName, sep='\t', encoding='utf-8')
-    print('Data Frame salvo com sucesso para phones.csv')
+    try:
+        data_frame.to_csv(fileName, sep='\t', encoding='utf-8')
+        print('Data Frame salvo com sucesso para phones.csv')
+        return True
+    except Exception as E:
+        print('Houve um erro ao salvar o Data Frame para phones.csv: ' + E)
+        return False
+
 
 def csv_to_df(file_name):
     phones_df = pd.read_csv(file_name, sep='\t', encoding='utf-8')
@@ -145,8 +153,8 @@ def clear_data(phones_df):
     phones_df['last_price'] = y
 
     #Limpo as linhas onde não possuem o preço antigo ou preço atual
-    phones_df[phones_df.current_price != 'ERROR']
-    phones_df[phones_df.last_price != 'ERROR']
+    phones_df = phones_df[phones_df['current_price'] != 'ERROR']
+    phones_df = phones_df[phones_df['last_price'] != 'ERROR']
 
     return phones_df
 
@@ -177,8 +185,3 @@ def new_info(phones_df):
     phones_df['discount_percent'] = disc_percent
 
     return phones_df
-
-
-def chart(phones_df):
-    sns.jointplot(x='likes_count', y='current_price', data=phones_df, height=(6))
-    plt.show()

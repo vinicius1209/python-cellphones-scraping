@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    {% extends "base.html" %}
+    {% block content %}
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Total de Páginas para efetuar a busca</h4>
+                <form>
+                    <div class="form-group">
+                        <input type="range" class="form-control-range" min="1" value ="5" id="rangePages">
+                    </div>
+                    <div class="form-group" style="text-align: center;">
+                        <h2 id="rangePagesValue">5</h2>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Scraping Options</h4>
+            </div>
+            <div class="card-body">
+                <button type="button" class="btn btn-primary" id="btnCreateDf" onclick="createDataFrame()">Criar Data Frame</button>
+                <a class="btn btn-primary" id="btnShowDf" alt="" target="_blank" href="data_frame">Visualizar Data Frame</a>
+                <button type="button" class="btn btn-secondary" id="btnCsvToDf">CSV para Data Frame</button>
+                <button type="button" class="btn btn-secondary" id="btnDfToCsv">Data Frame para CSV</button>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $('#rangePages').on('change', function () {
+            var value = document.getElementById('rangePages').value
+            document.getElementById("rangePagesValue").innerHTML = value;
+        })
+
+        function createDataFrame(){
+            var param = document.getElementById('rangePages').value;
+            $.ajax({
+                url: "/create_df/" + param,
+                type: 'GET',
+                beforeSend: function(){
+                    $("#loader").show();
+                },
+                success: function(res) {
+                    if (res == '200') {
+                        $.notify("Data Frame gerado com sucesso!", "success");
+                    }else{
+                        $.notify("Não foi possível gerar o Data Frame!", "error");
+                    }
+                },
+                complete:function(data){
+                    $("#loader").hide();
+                }
+            });
+        }
+    </script>
+    <!-- Image loader -->
+    <div id='loader' style='display: none;'>
+        <img src="{{ url_for('static', filename='files/loading.gif') }}" width='90px' height='90px'>
+    </div>
+    <!-- Image loader -->
+
+    {% endblock %}
+    </body>
+</html>

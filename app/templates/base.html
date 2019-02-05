@@ -1,0 +1,29 @@
+<!DOCTYPE>
+    <head>
+        {% if title %}
+        <title>{{ title }}</title>
+        {% else %}
+        <title>Home</title>
+        {% endif %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS LOCAIS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/geral.css') }}">
+     <!-- SCRIPTS LOCAIS -->
+    <script src="{{ url_for('static', filename='thirdy/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='thirdy/bootstrap.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='thirdy/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='thirdy/notify.js') }}"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+            <a class="navbar-brand" href="/home"> Oferta Esperta Scraping </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </nav>
+
+        {% block content %}
+        {% endblock %}
+

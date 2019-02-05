@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    {% extends "base.html" %}
+    {% block content %}
+    <div class="container">
+        <div class="row" style="margin-bottom: 1rem;">
+            <di class="col-md-12">
+                <div class="md-form barraPesquisa">
+                    <input class="form-control" type="text" placeholder="Pesquisar" aria-label="Search" id="mySearch">
+                </div>
+            </di>
+        </div>
+        {% if session["data_frame"] %}
+            {{ session["data_frame"] | safe }}
+        {% endif %}
+    </div>
+    <script type="text/javascript">
+    //Barra de pesquisa para pesquisar os componentes na table
+    $(document).ready(function(){
+        $("#mySearch").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+           $("#phone_table tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+    </script>
+    {% endblock %}
+    </body>
+</html>
