@@ -30,6 +30,7 @@ def create_df():
     likes = []
 
     for page in range(1, int(num_pages)+1):
+        print('Acessando página: ' + str(page))
         url = 'https://www.ofertaesperta.com/categoria/celulares-e-smartphones?page=' + str(page)
         response = get(url, headers=headers)
         html_soup = BeautifulSoup(response.text, 'html.parser')
@@ -126,16 +127,57 @@ def clear_data(phones_df):
     #Current_price
     y = []
     for x in phones_df.current_price:
-        y.append(float(x.replace('.', '').replace(',', '.')))
+        if y:
+            y.append(float(x.replace('.', '').replace(',', '.')))
+        else:
+            y.append('ERROR')
+
     phones_df['current_price'] = y
 
     #Last_price
     y = []
     for x in phones_df.last_price:
-        y.append(float(x.replace('.', '').replace(',', '.')))
+        if x:
+            y.append(float(x.replace('.', '').replace(',', '.')))
+        else:
+            y.append('ERROR')
+
     phones_df['last_price'] = y
 
+    #Limpo as linhas onde não possuem o preço antigo ou preço atual
+    phones_df[phones_df.current_price != 'ERROR']
+    phones_df[phones_df.last_price != 'ERROR']
+
     return phones_df
+
+def new_info(phones_df):
+
+    #Last_Price
+    last_price = []
+    for x in phones_df.last_price:
+        last_price.append(x)
+
+    #Current_Price
+    curr_price = []
+    for x in phones_df.current_price:
+        curr_price.append(x)
+
+    #Diferença de preço
+    disc_price = []
+    for a, b in zip(last_price, curr_price):
+        disc_price.append(round(a-b))
+
+    phones_df['discount_price'] = disc_price
+
+    #Porcentagem da diferença de preço
+    disc_percent = []
+    for a, b in zip(last_price, disc_price):
+        disc_percent.append(round((b/a)*100))
+
+    phones_df['discount_percent'] = disc_percent
+
+    return phones_df
+
 
 def chart(phones_df):
     sns.jointplot(x='likes_count', y='current_price', data=phones_df, height=(6))
