@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-    {% extends "base.html" %}
+    {% extends 'base.html' %}
     {% block content %}
     <div class="container">
         <div class="card">
@@ -8,27 +8,30 @@
                 <h4 class="card-title">Total de Páginas para efetuar a busca</h4>
                 <form>
                     <div class="form-group">
-                        <input type="range" class="form-control-range" min="1" value ="5" id="rangePages">
+                        <input type="range" class="form-control-range" min="1" value ="1" id="rangePages">
                     </div>
                     <div class="form-group" style="text-align: center;">
-                        <h2 id="rangePagesValue">5</h2>
+                        <h2 id="rangePagesValue">1</h2>
                     </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-secondary btn-lg btn-block" id="btnCreateDf" onclick="createDataFrame()">Criar Data Frame</button>
+                    </div>
+                    {% if session['csv'] %}
+                    <div class="form-group">
+                        <a class="btn btn-secondary btn-lg btn-block" id="btnCsv" href="csv">Download</a>
+                    </div>
+                    {% endif %}
                 </form>
             </div>
         </div>
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Scraping Options</h4>
-            </div>
-            <div class="card-body">
-                <button type="button" class="btn btn-primary" id="btnCreateDf" onclick="createDataFrame()">Criar Data Frame</button>
-                <a class="btn btn-primary" id="btnShowDf" alt="" target="_blank" href="data_frame">Visualizar Data Frame</a>
-                <button type="button" class="btn btn-secondary" id="btnCsvToDf">CSV para Data Frame</button>
-                <button type="button" class="btn btn-secondary" id="btnDfToCsv">Data Frame para CSV</button>
-            </div>
+    </div>
+    <div class="container">
+        <div id='loader' style='display: none;'>
+            <img src="{{ url_for('static', filename='files/loading.gif') }}" class="center" width='90px' height='90px'>
         </div>
     </div>
     <script type="text/javascript">
+
         $('#rangePages').on('change', function () {
             var value = document.getElementById('rangePages').value
             document.getElementById("rangePagesValue").innerHTML = value;
@@ -54,13 +57,8 @@
                 }
             });
         }
-    </script>
-    <!-- Image loader -->
-    <div id='loader' style='display: none;'>
-        <img src="{{ url_for('static', filename='files/loading.gif') }}" width='90px' height='90px'>
-    </div>
-    <!-- Image loader -->
 
+    </script>
     {% endblock %}
     </body>
 </html>

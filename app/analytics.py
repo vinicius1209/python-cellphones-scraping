@@ -99,11 +99,12 @@ def get_all_info_by_api(id):
 
     return response_json
 
-def df_to_csv(data_frame, fileName):
+def df_to_csv(data_frame, fileName=None):
     try:
-        data_frame.to_csv(fileName, sep='\t', encoding='utf-8')
-        print('Data Frame salvo com sucesso para phones.csv')
-        return True
+        if fileName is None:
+            return data_frame.to_csv(sep='\t', encoding='utf-8')
+        else:
+            return data_frame.to_csv(fileName, sep='\t', encoding='utf-8')
     except Exception as E:
         print('Houve um erro ao salvar o Data Frame para phones.csv: ' + E)
         return False

@@ -36,3 +36,9 @@
 .card{
      margin-bottom: 1.25rem;
 }
+
+img.center {
+     display: block;
+     margin-left: auto;
+     margin-right: auto;
+}

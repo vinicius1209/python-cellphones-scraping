@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-    {% extends "base.html" %}
+    {% extends 'base.html' %}
     {% block content %}
     <div class="container">
         <div class="row" style="margin-bottom: 1rem;">
@@ -10,8 +10,8 @@
                 </div>
             </di>
         </div>
-        {% if session["data_frame"] %}
-            {{ session["data_frame"] | safe }}
+        {% if session['data_frame'] %}
+            {{ session['data_frame'] | safe }}
         {% endif %}
     </div>
     <script type="text/javascript">
